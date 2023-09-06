@@ -1,25 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
 import './App.css';
+import Header from './components/Header';
+import Body from './components/Body';
+import Filters from './components/Filters';
+import List from './components/List';
+import { find } from './services/giphServices';
 
 function App() {
+  const [search, setSearch] = useState('');
+  const [giphList, setGiphList] = useState([]);
+  const requestFind = async () => {
+    try {
+      const { data: results } = await find(search);
+      setGiphList(results);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    requestFind();
+  }, [search]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <main className="App">
+      <Header></Header>
+      <Body>
+        <>
+          <section className="filster-section">
+            <Filters value={search} setValue={setSearch}></Filters>
+          </section>
+          <section>
+            <List list={giphList}></List>
+          </section>
+        </>
+      </Body>
+    </main>
   );
 }
 
